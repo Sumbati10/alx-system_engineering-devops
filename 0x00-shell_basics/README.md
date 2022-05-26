@@ -1,1 +1,1 @@
-shell basics
+first shell readme
