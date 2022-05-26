@@ -1,2 +1,3 @@
 #!/bin/bash
-/tmp/magic$ file -m school.mgc *
+O string SCHOOL School data
+!:mime School
