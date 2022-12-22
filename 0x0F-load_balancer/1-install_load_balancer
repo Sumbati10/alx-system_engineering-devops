@@ -1,21 +1,28 @@
 #!/usr/bin/env bash
-# configure a load-balancing server
+#The script is instaling and configuring HAproxy on my `lb-01` server.
+sudo apt-get update
+sudo apt install -y software-properties-common
+sudo add-apt-repository -y ppa:vbernat/haproxy
+sudo apt-get update
+sudo apt-get install haproxy
+sudo mv /etc/haproxy/haproxy.cfg{,.original}
+sudo touch /etc/haproxy/haproxy.cfg
 
-sudo apt-get install -y --no-install-recommends software-properties-common
-sudo add-apt-repository -y ppa:vbernat/haproxy-2.4
-sudo apt-get update -y
-sudo apt-get install -y haproxy=2.4.\*
-
-echo \
-	"
-frontend localnodes
+echo "defaults
+	log	global
+	option	httplog
+frontend web-server
 	bind *:80
-	mode http
-	default_backend nodes
-backend nodes
-	mode http
-	balance roundrobin
-	server 976-web-01 34.202.158.186
-	server 976-web-02 52.91.144.181" >> /etc/haproxy/haproxy.cfg
+	mode    http
+	default_backend web-servers
+	
+backend web-servers
+	balance	roundrobin
+	server 48630-web-01 34.202.158.186:80 check
+	server 48630-web-02 52.91.144.181:80 check" >> /etc/haproxy/haproxy.cfg
 
-sudo service haproxy restart
+#Enable haproxy to be managed via init script
+systemctl enable haproxy
+
+#start haproxy
+systemctl start haproxy
